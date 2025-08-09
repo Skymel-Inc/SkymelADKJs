@@ -3,20 +3,11 @@
  * Handles workflow execution, node processing, and ECGraph management
  */
 
-import { SkymelExecutionGraphLoader } from "./skymel_execution_graph_loader.js";
-import { CommonValidators } from "./common_validators.js";
-import { SkymelECGraphUtils } from "./skymel_ec_graph_utils.js";
-import { SkymelECGraphNodeForExternalApiCall } from "./skymel_ec_graph_node_for_external_api_call.js";
-import {
-    switchToTab,
-    processWorkflowNode,
-    setWorkflowFinalResult,
-    getFinalResultFromECGraph,
-    formatLLMText,
-    extractImageData,
-    createPremiumWorkflowSection,
-    prepareWorkflowVisualization
-} from "./premium_workflow_simplified.js";
+import { SkymelExecutionGraphLoader } from "/src/skymel_execution_graph_loader.js";
+import { CommonValidators } from "/src/common_validators.js";
+import { SkymelECGraphUtils } from "/src/skymel_ec_graph_utils.js";
+import { SkymelECGraphNodeForExternalApiCall } from "/src/skymel_ec_graph_node_for_external_api_call.js";
+
 
 /**
  * Node completion tracker for monitoring workflow progress
@@ -111,7 +102,7 @@ export class WorkflowOrchestrator {
                 nodeInputNames: externalInputNames,
                 nodeOutputNames: ["outputText"],
                 nodePrivateAttributesAndValues: {contextId: contextId, createNewContextIfContextIsNull: true},
-                endpointUrl: "./websocket-dynamic-pipeline-generation-infer",
+                endpointUrl: "https://skymel.com/websocket-dynamic-pipeline-generation-infer",
                 nodeInputNameToBackendInputNameMap: inputMappings,
                 backendOutputNameToNodeOutputNameMap: {"textOutputs": "dynamicWorkflowCallerNode.outputText"},
                 isEndpointWebSocketUrl: true

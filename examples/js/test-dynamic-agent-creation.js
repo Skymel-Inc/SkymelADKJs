@@ -1,5 +1,6 @@
-import { SkymelExecutionGraphLoader } from "./skymel_execution_graph_loader.js";
-import { SkymelECGraphUtils } from "./skymel_ec_graph_utils.js";
+// import { SkymelExecutionGraphLoader } from "/../../src/skymel_execution_graph_loader.js";
+import { SkymelExecutionGraphLoader } from "/src/skymel_execution_graph_loader.js";
+import { SkymelECGraphUtils } from "/src/skymel_ec_graph_utils.js";
 import { workflowOrchestrator } from "./workflow_orchestrator.js";
 
 
@@ -165,7 +166,7 @@ class DynamicAgentTestInterface {
 
         // Modify the endpoint URL for agent generation instead of regular workflow
         if (graphConfig.children && graphConfig.children[0]) {
-            graphConfig.children[0].nodeInitializationConfig.endpointUrl = "./websocket-dynamic-agent-generation-infer";
+            graphConfig.children[0].nodeInitializationConfig.endpointUrl = "https://skymel.com/websocket-dynamic-agent-generation-infer";
 
             // Add additional agent-specific attributes
             const developerPrompt = document.getElementById('developer-prompt').value;
