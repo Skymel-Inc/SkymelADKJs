@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Agent Creation Test Interface</title>
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #2d3748;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #1a202c;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .form-section h3 {
+            margin-top: 0;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        textarea, input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .file-upload {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .file-upload:hover {
+            border-color: #9ca3af;
+        }
+
+        .file-upload.dragover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .results-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .results-section h3 {
+            margin-top: 0;
+            color: #4a5568;
+        }
+
+        .output-area {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 15px;
+            min-height: 200px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        .status-ready {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+
+        .status-processing {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-error {
+            background-color: #fecaca;
+            color: #dc2626;
+        }
+
+        .status-success {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+
+        .workflow-visualization {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .workflow-step {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f8fafc;
+            margin-bottom: 15px;
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .step-title {
+            margin: 0;
+            color: #1a202c;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .step-type {
+            background: #3b82f6;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .step-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-group {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #2d3748;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .model-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .model-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .model-params {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .param-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .instructions-box {
+            background: #f7fafc;
+            border-left: 4px solid #4299e1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .instructions-label {
+            font-weight: 600;
+            color: #2b6cb0;
+            margin-bottom: 8px;
+        }
+
+        .instructions-text {
+            color: #2d3748;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
+        .execution-log {
+            background: #1a202c;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .log-entry {
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        .log-timestamp {
+            color: #718096;
+            font-size: 11px;
+        }
+
+        .log-level {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .log-level.info {
+            background: #3182ce;
+            color: white;
+        }
+
+        .log-level.success {
+            background: #38a169;
+            color: white;
+        }
+
+        .log-level.error {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .log-level.warning {
+            background: #d69e2e;
+            color: white;
+        }
+
+        .log-message {
+            color: #e2e8f0;
+        }
+
+        .json-display {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .attached-files {
+            margin-top: 10px;
+        }
+
+        .file-item {
+            display: inline-block;
+            background: #f3f4f6;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 8px;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .file-item .remove-file {
+            margin-left: 8px;
+            cursor: pointer;
+            color: #ef4444;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* D3.js Network Graph Styles */
+        .dag-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            position: relative;
+            overflow: visible;
+            background: #fafafa;
+            display: block;
+        }
+
+        .network-graph {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border: 1px solid #ddd;
+        }
+
+        .node {
+            cursor: pointer;
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+
+        .node.external {
+            fill: #16a34a;
+        }
+
+        .node.llm {
+            fill: #667eea;
+        }
+
+        .node.tool {
+            fill: #f59e0b;
+        }
+
+        .node.output {
+            fill: #dc2626;
+        }
+
+        .node:hover {
+            stroke-width: 4px;
+            stroke: #333;
+        }
+
+        .link {
+            stroke: #4a90e2;
+            stroke-opacity: 0.9;
+            stroke-width: 3px;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+
+        .link:hover {
+            stroke: #2c5aa0;
+            stroke-width: 4px;
+            stroke-opacity: 1;
+        }
+
+        .node-label {
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            text-anchor: middle;
+            dominant-baseline: central;
+            fill: white;
+            pointer-events: none;
+        }
+
+        .node-type {
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 10px;
+            text-anchor: middle;
+            dominant-baseline: central;
+            fill: rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+        }
+
+        .dag-legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .dag-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .dag-legend-color {
+            width: 20px;
+            height: 12px;
+            border-radius: 4px;
+        }
+
+        .graph-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .graph-controls button {
+            margin: 2px;
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .graph-controls button:hover {
+            background: #f0f0f0;
+        }
+
+        .d3-tooltip {
+            position: absolute;
+            background: #1a202c;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            z-index: 2000;
+            max-width: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            word-wrap: break-word;
+        }
+
+        .d3-tooltip.visible {
+            opacity: 1;
+        }
+
+        /* Final Output Styles */
+        .final-output-display {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 300px;
+            max-height: 600px;
+            overflow-y: auto;
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        .final-output-content {
+            color: #2d3748;
+        }
+
+        .final-output-content h1, .final-output-content h2, .final-output-content h3 {
+            color: #1a202c;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .final-output-content p {
+            margin-bottom: 12px;
+        }
+
+        .final-output-content ul, .final-output-content ol {
+            margin-bottom: 15px;
+            padding-left: 25px;
+        }
+
+        .final-output-content li {
+            margin-bottom: 8px;
+        }
+
+        .final-output-content code {
+            background: #f7fafc;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+        }
+
+        .final-output-content pre {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+        }
+
+        .final-output-metadata {
+            background: #f8fafc;
+            border-left: 4px solid #4299e1;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .final-output-metadata h4 {
+            margin: 0 0 10px 0;
+            color: #2b6cb0;
+            font-size: 16px;
+        }
+
+        .final-output-metadata .metadata-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .final-output-metadata .metadata-item:last-child {
+            border-bottom: none;
+        }
+
+        .final-output-metadata .metadata-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .final-output-metadata .metadata-value {
+            color: #2d3748;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🤖 Dynamic Agent Creation Test Interface</h1>
+
+    <!-- Agent Configuration Section -->
+    <div class="form-section">
+        <h3>🎯 End User Query</h3>
+        <label for="agent-task">Describe end user query or leave blank for trigger</label>
+        <textarea id="agent-task" placeholder="Example: Whats latest AI news">Whats latest AI news</textarea>
+    </div>
+
+    <!-- Developer Configuration -->
+    <div class="form-section">
+        <h3>⚙️ Developer Configuration</h3>
+        <label for="developer-prompt">Developer Prompt (Optional system instructions):</label>
+        <textarea id="developer-prompt" placeholder="Additional system instructions, constraints, or specialized knowledge for the agent...">You are a professional research assistant focused on accuracy and thoroughness. Always cite sources and provide structured outputs.</textarea>
+
+        <div class="input-row">
+            <div class="input-group">
+                <label for="context-id">Context ID:</label>
+                <input type="text" id="context-id" placeholder="Leave blank for new context">
+            </div>
+            <div class="input-group">
+                <label for="agent-name">Agent Name (Optional):</label>
+                <input type="text" id="agent-name" placeholder="My Research Agent">
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Configuration -->
+    <div class="form-section">
+        <h3>📁 Available Inputs</h3>
+        <div class="checkbox-group">
+            <div class="checkbox-item">
+                <input type="checkbox" id="input-text" checked disabled>
+                <label for="input-text">Text Input (Always available)</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="input-image">
+                <label for="input-image">Image Input</label>
+            </div>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <label for="file-upload">File Attachments:</label>
+            <div class="file-upload" id="file-upload">
+                <p>📄 Drag & drop files here or click to browse</p>
+                <p style="font-size: 12px; color: #6b7280;">Supported formats: PDF, TXT, CSV, DOCX, etc.</p>
+                <input type="file" id="file-input" multiple style="display: none;">
+            </div>
+            <div id="attached-files" class="attached-files"></div>
+        </div>
+    </div>
+
+    <!-- MCP Tools Configuration -->
+    <div class="form-section">
+        <h3>🔧 MCP Tools Configuration</h3>
+        <div class="checkbox-item">
+            <input type="checkbox" id="enable-mcp" checked>
+            <label for="enable-mcp">Enable MCP (Model Context Protocol) Tools</label>
+        </div>
+        <div id="mcp-config" style="margin-top: 15px;">
+            <label>Available MCP Tool Categories:</label>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="mcp-filesystem" checked>
+                    <label for="mcp-filesystem">Filesystem Tools</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="mcp-git" checked>
+                    <label for="mcp-git">Git Tools</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="mcp-database" checked>
+                    <label for="mcp-database">Database Tools</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="mcp-web" checked>
+                    <label for="mcp-web">Web Automation</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="mcp-search" checked>
+                    <label for="mcp-search">Search Tools</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-section">
+        <button id="create-agent" class="btn btn-primary">🚀 Create Dynamic Agent</button>
+        <button id="execute-agent" class="btn btn-secondary" disabled>▶️ Execute Agent</button>
+        <button id="clear-results" class="btn btn-danger">🗑️ Clear Results</button>
+        <span id="status" class="status-indicator status-ready">Ready</span>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section">
+        <h3>📊 Results & Agent Workflow</h3>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="agent-json">Agent JSON</div>
+            <div class="tab" data-tab="workflow-viz">Workflow</div>
+            <div class="tab" data-tab="dag-viz">DAG Visualization</div>
+            <div class="tab" data-tab="final-output">Final Output</div>
+            <div class="tab" data-tab="execution-log">Execution Log</div>
+            <div class="tab" data-tab="raw-output">Raw Output</div>
+        </div>
+
+        <div id="agent-json" class="tab-content active">
+            <label>Generated Agent Configuration (JSON):</label>
+            <div id="agent-json-output" class="json-display">Agent JSON will appear here...</div>
+        </div>
+
+        <div id="workflow-viz" class="tab-content">
+            <div class="workflow-visualization">
+                <div id="workflow-container">
+                    <p>Enhanced workflow visualization with instructions will appear here after agent creation...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="dag-viz" class="tab-content">
+            <div class="workflow-visualization">
+                <h4>Network Graph Visualization</h4>
+                <p style="color: #6b7280; font-size: 14px; margin-bottom: 15px;">Interactive network graph showing data flow between nodes using actual input/output connections</p>
+                <div id="dag-container" class="dag-container">
+                    <div class="graph-controls">
+                        <button id="restart-simulation">Restart Layout</button>
+                        <button id="center-graph">Center Graph</button>
+                    </div>
+                    <div class="dag-legend">
+                        <div class="dag-legend-item">
+                            <div class="dag-legend-color" style="background: #16a34a;"></div>
+                            <span>External Input</span>
+                        </div>
+                        <div class="dag-legend-item">
+                            <div class="dag-legend-color" style="background: #667eea;"></div>
+                            <span>LLM/Process</span>
+                        </div>
+                        <div class="dag-legend-item">
+                            <div class="dag-legend-color" style="background: #f59e0b;"></div>
+                            <span>Tool/Action</span>
+                        </div>
+                        <div class="dag-legend-item">
+                            <div class="dag-legend-color" style="background: #dc2626;"></div>
+                            <span>Output</span>
+                        </div>
+                    </div>
+                    <p id="dag-placeholder" style="text-align: center; color: #6b7280; margin-top: 250px;">Network graph will appear here after agent creation...</p>
+                </div>
+                <div class="d3-tooltip" id="d3-tooltip"></div>
+            </div>
+        </div>
+
+        <div id="final-output" class="tab-content">
+            <div class="workflow-visualization">
+                <h4>Final Execution Output</h4>
+                <p style="color: #6b7280; font-size: 14px; margin-bottom: 15px;">Clean, formatted display of the agent's final execution results</p>
+                <div id="final-output-container">
+                    <div id="final-output-content" class="final-output-display">
+                        <p style="text-align: center; color: #6b7280; padding: 40px;">Final output will appear here after agent execution...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="execution-log" class="tab-content">
+            <label>Agent Execution Log:</label>
+            <div id="execution-log-output" class="execution-log">Execution log will appear here...</div>
+        </div>
+
+        <div id="raw-output" class="tab-content">
+            <label>Raw LLM Response:</label>
+            <div id="raw-llm-output" class="output-area">Raw LLM output will appear here...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Load the JavaScript module -->
+<script src="./javascript/test-dynamic-agent-creation.js" type="module" defer></script>
+</body>
+</html>

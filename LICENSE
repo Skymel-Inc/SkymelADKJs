@@ -1,24 +1,45 @@
-This is free and unencumbered software released into the public domain.
+Copyright (c) 2025 Skymel Inc. All Rights Reserved.
 
-Anyone is free to copy, modify, publish, use, compile, sell, or
-distribute this software, either in source code form or as a compiled
-binary, for any purpose, commercial or non-commercial, and by any
-means.
+PROPRIETARY SOFTWARE LICENSE AGREEMENT
 
-In jurisdictions that recognize copyright laws, the author or authors
-of this software dedicate any and all copyright interest in the
-software to the public domain. We make this dedication for the benefit
-of the public at large and to the detriment of our heirs and
-successors. We intend this dedication to be an overt act of
-relinquishment in perpetuity of all present and future rights to this
-software under copyright law.
+This software and associated documentation files (the "Software") are 
+proprietary to Skymel Inc. and are protected by copyright law 
+and international treaties.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
+GRANT OF LICENSE:
+Subject to the terms of this Agreement and your valid subscription to 
+Skymel Inc.'s API services, Skymel Inc. grants you a 
+limited, non-exclusive, non-transferable, revocable license to use the 
+Software solely in connection with your authorized use of Skymel Inc.'s 
+API services.
 
-For more information, please refer to <https://unlicense.org>
+RESTRICTIONS:
+You may NOT:
+1. Use the Software without a valid API service subscription
+2. Copy, modify, or create derivative works of the Software
+3. Distribute, sublicense, lease, rent, or transfer the Software
+4. Reverse engineer, decompile, or disassemble the Software
+5. Remove or alter any copyright, trademark, or other proprietary notices
+6. Use the Software for any purpose other than with our API services
+
+OWNERSHIP:
+Skymel Inc. retains all right, title, and interest in and to 
+the Software, including all intellectual property rights therein.
+
+TERMINATION:
+This license automatically terminates if:
+- Your API service subscription ends or is terminated
+- You breach any terms of this Agreement
+Upon termination, you must cease all use and destroy all copies.
+
+NO WARRANTY:
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+
+LIMITATION OF LIABILITY:
+IN NO EVENT SHALL Skymel Inc. BE LIABLE FOR ANY DAMAGES 
+ARISING FROM THE USE OF THIS SOFTWARE.
+
+GOVERNING LAW:
+This Agreement is governed by the laws of California/United States of America.
+
+For questions about this license, contact: legal@skymel.com
