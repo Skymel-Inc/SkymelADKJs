@@ -28,6 +28,36 @@ export class RemoteApiCaller {
         this.isEndpointWebSocketUrl = CommonValidators.getKeyValueFromDictIfKeyAbsentReturnDefault(config, 'isEndpointWebSocketUrl', false);
     }
 
+    getApiKey() {
+        return this.apiKey;
+    }
+
+    setApiKey(apiKey) {
+        if (CommonValidators.isNonEmptyString(apiKey)) {
+            this.apiKey = apiKey;
+        }
+    }
+
+    getEndpointUrl() {
+        return this.endpointUrl;
+    }
+
+    setEndpointUrl(endpointUrl) {
+        if (CommonValidators.isNonEmptyString(endpointUrl)) {
+            this.endpointUrl = endpointUrl;
+        }
+    }
+
+    getIsEndpointWebSocketUrl() {
+        return this.isEndpointWebSocketUrl;
+    }
+
+    setIsEndpointWebSocketUrl(isEndpointWebSocketUrl) {
+        if (CommonValidators.isBoolean(isEndpointWebSocketUrl)) {
+            this.isEndpointWebSocketUrl = isEndpointWebSocketUrl;
+        }
+    }
+
     ___getDefaultCompressionSettings() {
         return {
             compressionType: RemoteApiCaller.COMPRESS_ZFP, compressionAlgorithmParameters: {
@@ -45,7 +75,7 @@ export class RemoteApiCaller {
             if (!CommonValidators.isNotEmptyObjectAndHasMember(inferenceResponseProto, 'status') && !CommonValidators.isEmpty(inferenceResponseProto.status)) {
                 return inferenceResponseProto;
             }
-            console.log(inferenceResponseProto ,JSON.stringify(inferenceResponseProto, null, 2))
+            console.log(inferenceResponseProto, JSON.stringify(inferenceResponseProto, null, 2))
             if (inferenceResponseProto.status.status !== skymel.skymel.modelio.StatusReport.StatusCode.SUCCESS) {
                 alert(inferenceResponseProto.status.message);
             }
@@ -56,10 +86,10 @@ export class RemoteApiCaller {
 
 
     /**
-     * This method connects to websocket URL sends a message and waits until a response is received.
+     * This method connects to websocket URL, sends a message and waits until a response is received.
      * @param url The websocket URL to connect to.
      * @param messageToSend Can be string or Uint8Array. In case of Uint8Array, the backend receives the message as a
-     * binary.
+     * binary blob.
      * @param responseWaitTimeoutMilliseconds A number indicating the number of milliseconds to wait for a response
      * from the WebSocket server.
      * @returns {Promise<unknown>}

@@ -20,19 +20,6 @@ const runDataProcessing = async function (graphReference, inputNodeResultsDict, 
         feedDict[keyName] = inputNodeResultsDict[keyName];
     }
 
-    // const modelInputsTensorFormattingDetails = nodeReference.getModelInputsTensorFormattingDetails();
-    //
-    // if (!CommonValidators.isEmpty(modelInputsTensorFormattingDetails)) {
-    //     feedDict = reformatInputsAsTensors(modelInputsTensorFormattingDetails, feedDict, modelRunner);
-    // }
-
-    // const graphNodeOutputToModelRunnerInputMap = nodeReference.getGraphNodeOutputToModelRunnerInputMap();
-    // if (!CommonValidators.isEmpty(graphNodeOutputToModelRunnerInputMap)) {
-    //     feedDict = replaceKeysAcrossDict(graphNodeOutputToModelRunnerInputMap, feedDict);
-    // }
-
-    // let modelExecutionResult = await modelRunner.runInference(feedDict);
-
     if (CommonValidators.isEmpty(modelExecutionResult)) {
         return null;
     }

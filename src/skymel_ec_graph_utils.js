@@ -365,7 +365,7 @@ export class SkymelECGraphUtils {
                 inferenceRequestProtoDict = SkymelECGraphUtils.__insertTensorDictIntoInferenceRequestProtoDict(tempStringTensorDict, key, inferenceRequestProtoDict);
                 continue;
             }
-            if (CommonValidators.isArray(currentEntry) && currentEntry.length===1 &&CommonValidators.isNonEmptyString(currentEntry[0]) ) {
+            if (CommonValidators.isArray(currentEntry) && currentEntry.length === 1 && CommonValidators.isNonEmptyString(currentEntry[0])) {
                 const tempStringTensorDict = SkymelECGraphUtils.makeStringTensorDict(currentEntry[0]);
                 inferenceRequestProtoDict = SkymelECGraphUtils.__insertTensorDictIntoInferenceRequestProtoDict(tempStringTensorDict, key, inferenceRequestProtoDict);
                 continue;
@@ -380,9 +380,9 @@ export class SkymelECGraphUtils {
                 inferenceRequestProtoDict = SkymelECGraphUtils.__insertTensorDictIntoInferenceRequestProtoDict(tempBooleanTensorDict, key, inferenceRequestProtoDict);
                 continue;
             }
-            if (CommonValidators.isArray(currentEntry) && currentEntry.length===1 && CommonValidators.isImageType(currentEntry[0]) ) {
+            if (CommonValidators.isArray(currentEntry) && currentEntry.length === 1 && CommonValidators.isImageType(currentEntry[0])) {
                 const imageObject = currentEntry[0];
-                let imageValue = imageObject.imageBase64 || imageObject.imageUrl || imageObject.imageBytes ;
+                let imageValue = imageObject.imageBase64 || imageObject.imageUrl || imageObject.imageBytes;
                 const tempStringTensorDict = SkymelECGraphUtils.makeStringTensorDict(imageValue);
                 inferenceRequestProtoDict = SkymelECGraphUtils.__insertTensorDictIntoInferenceRequestProtoDict(tempStringTensorDict, key, inferenceRequestProtoDict);
                 continue;
@@ -494,5 +494,29 @@ export class SkymelECGraphUtils {
             return flatArrayOrTensorDict;
         }
         return null;
+    }
+
+    static async getFileDataAndDetailsDictFromHtmlFileInputElement(inputFileElement) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                const fileData = {
+                    name: inputFileElement.name,
+                    type: inputFileElement.type,
+                    size: inputFileElement.size,
+                    lastModified: inputFileElement.lastModified,
+                    content: event.target.result // Base64 data for binary files
+                };
+                resolve(fileData);
+            };
+
+            reader.onerror = function (e) {
+                reject(new Error('Error reading file: ' + inputFileElement.name));
+            };
+
+            // Read file as data URL (base64) which works for all file types
+            reader.readAsDataURL(inputFileElement);
+        });
     }
 }

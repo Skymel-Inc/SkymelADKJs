@@ -2,6 +2,7 @@ import {CommonValidators} from "./common_validators.js";
 import {SkymelECGraphNodeUtils} from "./skymel_ec_graph_node_utils.js";
 import {SkymelECGraphNodeForDataProcessing} from "./skymel_ec_graph_node_for_data_processing.js";
 import {RemoteApiCaller} from "./remote_api_caller.js";
+import {SkymelECGraphUtils} from "./skymel_ec_graph_utils";
 
 
 const addNodePrivateAttributesToFeedDict = function (feedDict, nodePrivateAttributeNamesToValuesMap) {
@@ -93,23 +94,25 @@ export class SkymelECGraphNodeForExternalApiCall extends SkymelECGraphNodeForDat
         if (CommonValidators.isEmpty(initializationOptions) || !CommonValidators.isDict(initializationOptions)) {
             return false;
         }
-        if (!('endpointUrl' in initializationOptions)) {
+        if (!('apiKey' in initializationOptions)) {
             return false;
         }
-        return true;
+        return 'endpointUrl' in initializationOptions;
     }
 
     constructor(initializationOptions) {
         if (!SkymelECGraphNodeForExternalApiCall.isValidInitializationOptions(initializationOptions)) {
             throw new Error(
                 "Invalid initialization options for SkymelECGraphNodeForExternalApiCall. " +
-                "Expected initializationOptions to be a dict with keys 'endpointUrl'." +
+                "Expected initializationOptions to be a dict with keys 'endpointUrl', 'apiKey'." +
                 "Got initializationOptions = " + JSON.stringify(initializationOptions)
             );
         }
 
         initializationOptions['nodeSubroutine'] = callRemoteApiEndpoint;
         super(initializationOptions);
+
+        this.apiKey = CommonValidators.getKeyValueFromDictIfKeyAbsentReturnDefault(initializationOptions, "apiKey", 'TESTER_API_KEY');
         this.endpointUrl = CommonValidators.getKeyValueFromDictIfKeyAbsentReturnDefault(initializationOptions, "endpointUrl", null);
         this.nodePrivateAttributesAndValues = CommonValidators.getKeyValueFromDictIfKeyAbsentReturnDefault(initializationOptions, "nodePrivateAttributesAndValues", {});
         this.nodeInputNameToBackendInputNameMap = CommonValidators.getKeyValueFromDictIfKeyAbsentReturnDefault(initializationOptions, "nodeInputNameToBackendInputNameMap", {});
@@ -128,6 +131,10 @@ export class SkymelECGraphNodeForExternalApiCall extends SkymelECGraphNodeForDat
 
     getRemoteApiCallEndpointUrl() {
         return this.endpointUrl;
+    }
+
+    getNodeType() {
+        return SkymelECGraphUtils.NODE_TYPE_EXTERNAL_API_CALLER;
     }
 
     getAllNodePrivateAttributesAndValuesMap() {
@@ -161,8 +168,19 @@ export class SkymelECGraphNodeForExternalApiCall extends SkymelECGraphNodeForDat
         if (CommonValidators.isEmpty(this.remoteApiCaller)) {
             this.remoteApiCaller = new RemoteApiCaller({
                 endpointUrl: this.endpointUrl,
-                isEndpointWebSocketUrl: this.isEndpointWebSocketUrl
+                isEndpointWebSocketUrl: this.isEndpointWebSocketUrl,
+                apiKey: this.apiKey,
             });
+        } else if (this.remoteApiCaller instanceof RemoteApiCaller) {
+            if (this.remoteApiCaller.getApiKey() !== this.apiKey) {
+                this.remoteApiCaller.setApiKey(this.apiKey);
+            }
+            if (this.remoteApiCaller.getEndpointUrl() !== this.endpointUrl) {
+                this.remoteApiCaller.setEndpointUrl(this.endpointUrl);
+            }
+            if (this.remoteApiCaller.getIsEndpointWebSocketUrl() !== this.isEndpointWebSocketUrl) {
+                this.remoteApiCaller.setIsEndpointWebSocketUrl(this.isEndpointWebSocketUrl);
+            }
         }
         return this.remoteApiCaller;
     }
