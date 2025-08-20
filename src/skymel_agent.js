@@ -1,9 +1,9 @@
 import {CommonValidators} from "./common_validators.js";
-import {SkymelExecutionGraphLoader} from "./skymel_execution_graph_loader";
-import {SkymelECGraphUtils} from "./skymel_ec_graph_utils";
-import {SkymelECGraph} from "./skymel_execution_control_graph";
+import {SkymelExecutionGraphLoader} from "./skymel_execution_graph_loader.js";
+import {SkymelECGraphUtils} from "./skymel_ec_graph_utils.js";
+import {SkymelECGraph} from "./skymel_execution_control_graph.js";
 
-class SkymelAgent {
+export class SkymelAgent {
     constructor(apiKey, agentCreationEndpointUrl = "/websocket-dynamic-agent-generation-infer",
                 agentCreationEndpointUrlIsWebSocketUrl = true, agentNameString = "",
                 agentDefinitionString = "",
@@ -107,6 +107,7 @@ class SkymelAgent {
                 nodeOutputNames: ["outputText"],
                 nodePrivateAttributesAndValues: {contextId: contextIdString, createNewContextIfContextIsNull: true},
                 endpointUrl: this.agentCreationEndpointUrl,
+                apiKey: this.apiKey,
                 nodeInputNameToBackendInputNameMap: inputMappings,
                 backendOutputNameToNodeOutputNameMap: {"textOutputs": "dynamicWorkflowCallerNode.outputText"},
                 isEndpointWebSocketUrl: this.agentCreationEndpointUrlIsWebSocketUrl

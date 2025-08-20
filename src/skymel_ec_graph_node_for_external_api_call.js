@@ -2,7 +2,7 @@ import {CommonValidators} from "./common_validators.js";
 import {SkymelECGraphNodeUtils} from "./skymel_ec_graph_node_utils.js";
 import {SkymelECGraphNodeForDataProcessing} from "./skymel_ec_graph_node_for_data_processing.js";
 import {RemoteApiCaller} from "./remote_api_caller.js";
-import {SkymelECGraphUtils} from "./skymel_ec_graph_utils";
+import {SkymelECGraphUtils} from "./skymel_ec_graph_utils.js";
 
 
 const addNodePrivateAttributesToFeedDict = function (feedDict, nodePrivateAttributeNamesToValuesMap) {

@@ -2,7 +2,7 @@
 import { SkymelExecutionGraphLoader } from "/src/skymel_execution_graph_loader.js";
 import { SkymelECGraphUtils } from "/src/skymel_ec_graph_utils.js";
 import { workflowOrchestrator } from "./workflow_orchestrator.js";
-import { SkymelAgent } from "/../../src/skymel_agent.js";
+
 
 class DynamicAgentTestInterface {
     constructor() {
@@ -183,7 +183,6 @@ class DynamicAgentTestInterface {
         return graphConfig;
     }
 
-
     async createAgent() {
         try {
             this.updateStatus('Creating agent...', 'processing');
@@ -197,95 +196,84 @@ class DynamicAgentTestInterface {
             // Clear previous results
             this.clearOutputs();
 
-            // Get configuration values from the form
-            const agentName = document.getElementById('agent-name').value.trim();
-            const developerPrompt = document.getElementById('developer-prompt').value.trim();
-            const contextId = document.getElementById('context-id').value.trim();
-            const isMcpEnabled = document.getElementById('enable-mcp').checked;
+            // Create the graph configuration for agent creation using workflowOrchestrator approach
+            const graphConfig = this.makeJsonConfigObjectToCreateAgent();
+            console.log('Agent creation graph config:', graphConfig);
 
-            // Create SkymelAgent instance
-            // Note: You'll need to provide the actual API key
-            const apiKey = "your-api-key-here"; // This should come from configuration/environment
-            const agentCreationEndpointUrl = "https://skymel.com/websocket-dynamic-agent-generation-infer";
-            const agentCreationEndpointUrlIsWebSocketUrl = true;
+            // Load and execute the graph
+            const creationGraph = SkymelExecutionGraphLoader.loadGraphFromJsonObject(graphConfig);
 
-            const skymelAgent = new SkymelAgent(
-                apiKey,
-                agentCreationEndpointUrl,
-                agentCreationEndpointUrlIsWebSocketUrl,
-                agentName, // agentNameString
-                "", // agentDefinitionString - could be derived from task or separate field
-                "", // agentRestrictionsString - could be added as a form field
-                developerPrompt, // developerConfigurationString
-                isMcpEnabled
+            // Prepare external inputs using the same approach as app.js
+            const externalInputs = {
+                "external.text": task
+            };
+
+            // Process attached files like in app.js
+            const processedFiles = await Promise.all(
+                this.attachedFiles.map(async (file, index) => {
+                    try {
+                        return await workflowOrchestrator.processFileForSending(file);
+                    } catch (error) {
+                        console.error(`Error processing file ${file.name}:`, error);
+                        throw error;
+                    }
+                })
             );
 
-            // Process attached files to match SkymelAgent expected format
-            let fileDataAndDetailsForAttachment = [];
-
-            if (this.attachedFiles && this.attachedFiles.length > 0) {
-                // Convert our file format to what SkymelAgent expects
-                fileDataAndDetailsForAttachment = this.attachedFiles.map(file => ({
-                    name: file.name,
-                    type: file.type,
-                    size: file.size,
-                    lastModified: Date.now(), // We don't have this from our current format
-                    content: file.data // This should already be base64 encoded
-                }));
-            }
-
-            console.log('Creating agent with SkymelAgent:', {
-                task,
-                filesCount: fileDataAndDetailsForAttachment.length,
-                contextId,
-                agentName,
-                isMcpEnabled
+            // Add file inputs to external inputs
+            processedFiles.forEach((file, index) => {
+                externalInputs[`external.file${index + 1}`] = file.content;
             });
 
-            // Use SkymelAgent to get the agent configuration
-            const agentGraph = await skymelAgent.getAgenticWorkflowGraphJsonConfig(
-                task,
-                fileDataAndDetailsForAttachment,
-                contextId
-            );
+            console.log('External inputs for agent creation:', externalInputs);
 
-            if (!agentGraph) {
-                throw new Error('Failed to generate agent configuration');
+            // Execute the agent creation graph
+            await creationGraph.executeGraph({'externalInputNamesToValuesDict': externalInputs});
+
+            const result = creationGraph.getLastExecutionResult();
+            console.log('Agent creation result:', result);
+
+            const agentOutputKey = 'dynamic_graph.dynamicWorkflowCallerNode.outputText';
+            if (result && result[agentOutputKey]) {
+                const rawOutput = result[agentOutputKey];
+                document.getElementById('raw-llm-output').textContent = rawOutput;
+
+                try {
+                    // Parse the agent JSON
+                    const agentGraph = JSON.parse(rawOutput);
+                    this.currentAgent = agentGraph;
+
+                    // Display the agent JSON
+                    document.getElementById('agent-json-output').textContent =
+                        JSON.stringify(agentGraph, null, 2);
+
+                    // Create workflow visualization
+                    this.createWorkflowVisualization(agentGraph);
+
+                    // Create DAG visualization
+                    this.createDAGVisualization(agentGraph);
+
+                    // Enable execute button
+                    document.getElementById('execute-agent').disabled = false;
+
+                    this.updateStatus('Agent created successfully!', 'success');
+
+                } catch (parseError) {
+                    console.error('Failed to parse agent JSON:', parseError);
+                    document.getElementById('agent-json-output').textContent =
+                        'Failed to parse agent JSON: ' + parseError.message;
+                    this.updateStatus('Agent creation failed - invalid JSON', 'error');
+                }
+
+            } else {
+                throw new Error('No agent output received from creation process');
             }
-
-            console.log('Agent creation result:', agentGraph);
-
-            // Store the current agent
-            this.currentAgent = agentGraph;
-
-            // Display the agent JSON
-            document.getElementById('agent-json-output').textContent =
-                JSON.stringify(agentGraph, null, 2);
-
-            // Display raw LLM output (this would be the stringified JSON before parsing)
-            document.getElementById('raw-llm-output').textContent =
-                JSON.stringify(agentGraph, null, 2);
-
-            // Create workflow visualization
-            this.createWorkflowVisualization(agentGraph);
-
-            // Create DAG visualization
-            this.createDAGVisualization(agentGraph);
-
-            // Enable execute button
-            document.getElementById('execute-agent').disabled = false;
-
-            this.updateStatus('Agent created successfully!', 'success');
 
         } catch (error) {
             console.error('Error creating agent:', error);
             this.updateStatus('Agent creation failed: ' + error.message, 'error');
             document.getElementById('agent-json-output').textContent =
                 'Error creating agent: ' + error.message;
-
-            // Also show more detailed error info in raw output
-            document.getElementById('raw-llm-output').textContent =
-                'Error details: ' + error.message + '\n\nStack trace:\n' + (error.stack || 'No stack trace available');
         } finally {
             document.getElementById('create-agent').disabled = false;
         }
