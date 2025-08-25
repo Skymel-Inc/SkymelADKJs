@@ -1,5 +1,6 @@
 import {CommonValidators} from "./common_validators.js";
 import {SkymelECGraphUtils} from "./skymel_ec_graph_utils.js";
+import * as skymel from './skymel_modelio_proto.standalone.js';
 
 export class SkymelECGraphNodeUtils {
     constructor() {

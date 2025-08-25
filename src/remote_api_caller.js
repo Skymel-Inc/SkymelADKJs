@@ -1,7 +1,7 @@
 // import {GraphUtils} from "./graph_utils.js";
 import {CommonValidators} from "./common_validators.js";
 import {SkymelECGraphUtils} from "./skymel_ec_graph_utils.js";
-
+import * as skymel from './skymel_modelio_proto.standalone.js';
 
 async function readBlobAsync(blob) {
     return new Promise((resolve, reject) => {

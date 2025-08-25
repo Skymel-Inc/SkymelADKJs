@@ -1,6 +1,6 @@
 import {CommonValidators} from "./common_validators.js";
 import {CommonHashUtils} from "./common_hash_utils.js";
-
+import * as skymel from './skymel_modelio_proto.standalone.js';
 export class SkymelECGraphUtils {
 
     static GRAPH_INITIALIZATION_CONFIG_KEYNAME_FOR_EXTERNAL_INPUTS = 'externalInputNames';
