@@ -1,0 +1,66 @@
+{
+  "name": "skymel-adk-js",
+  "version": "1.0.1",
+  "description": "Skymel Agent Development Kit using Javascript - A JavaScript SDK for creating and managing intelligent agents",
+  "main": "dist/skymel-adk.cjs",
+  "module": "dist/skymel-adk.esm.js",
+  "browser": "dist/skymel-adk.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./dist/skymel-adk.cjs",
+      "browser": "./dist/skymel-adk.js"
+    },
+    "./dist": {
+      "import": "./dist/skymel-adk.esm.js",
+      "require": "./dist/skymel-adk.cjs",
+      "browser": "./dist/skymel-adk.js"
+    }
+  },
+  "unpkg": "dist/skymel-adk.min.js",
+  "jsdelivr": "dist/skymel-adk.min.js",
+  "files": [
+    "src/",
+    "dist/",
+    "docs/",
+    "examples/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "build:watch": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "rollup": "^3.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-commonjs": "^24.0.0",
+    "@rollup/plugin-terser": "^0.4.0"
+  },
+  "keywords": [
+    "agent",
+    "ai",
+    "artificial-intelligence",
+    "skymel",
+    "sdk",
+    "development-kit",
+    "javascript",
+    "workflow",
+    "automation"
+  ],
+  "author": "Skymel Inc",
+  "license": "SEE LICENSE FILE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Skymel-Inc/SkymelADKJs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Skymel-Inc/SkymelADKJs/issues"
+  },
+  "homepage": "https://github.com/Skymel-Inc/SkymelADKJs#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
