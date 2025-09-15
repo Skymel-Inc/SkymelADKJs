@@ -195,8 +195,92 @@ export class SkymelAgent {
     }
 
     async runAgenticWorkflow(agenticWorkflowGraphJsonConfig, inputNamesToValuesDict) {
-        const agenticWorkflowSkymelECGraph = SkymelExecutionGraphLoader.loadGraphFromJsonObject(agenticWorkflowGraphJsonConfig);
-        const listOfExternalInputs = SkymelECGraphUtils.getExternalInputNamesFromGraphInitializationConfig(agenticWorkflowSkymelECGraph.getInitializationConfig());
+        // Ensure all nodes have apiKey in their initialization config for external API calls
+        const processedGraphConfig = this.__ensureApiKeyInNodeConfigs(agenticWorkflowGraphJsonConfig);
+        
+        const agenticWorkflowSkymelECGraph = SkymelExecutionGraphLoader.loadGraphFromJsonObject(processedGraphConfig);
+        
+        if (!(agenticWorkflowSkymelECGraph instanceof SkymelECGraph)) {
+            return Promise.reject('Could not successfully load agentic workflow graph.');
+        }
 
+        const listOfExternalInputs = SkymelECGraphUtils.getExternalInputNamesFromGraphInitializationConfig(agenticWorkflowSkymelECGraph.getInitializationConfig());
+        
+        // Validate that the graph is valid before execution
+        const isGraphValid = await agenticWorkflowSkymelECGraph.isGraphValid();
+        if (!isGraphValid) {
+            return Promise.reject('Generated agentic workflow graph is invalid and cannot be executed.');
+        }
+
+        // Normalize input keys to ensure compatibility with graph expectations
+        const normalizedInputs = this.__normalizeInputKeys(inputNamesToValuesDict);
+        
+        // Execute the agentic workflow graph
+        await agenticWorkflowSkymelECGraph.executeGraph({
+            'externalInputNamesToValuesDict': normalizedInputs
+        });
+
+        const executionResult = agenticWorkflowSkymelECGraph.getLastExecutionResult();
+        
+        if (CommonValidators.isEmpty(executionResult)) {
+            return Promise.reject("Got null value as a result of Agentic Workflow execution.");
+        }
+
+        return executionResult;
+    }
+
+    /**
+     * Normalizes input keys for ECGraph execution to ensure compatibility
+     * @param {Object} inputNamesToValuesDict - Input names to values dictionary
+     * @returns {Object} Normalized inputs
+     */
+    __normalizeInputKeys(inputNamesToValuesDict) {
+        if (!CommonValidators.isDict(inputNamesToValuesDict) || CommonValidators.isEmpty(inputNamesToValuesDict)) {
+            return {};
+        }
+
+        const normalized = {};
+
+        for (const key in inputNamesToValuesDict) {
+            if (key.includes("input")) {
+                normalized[key] = inputNamesToValuesDict[key];
+                continue;
+            }
+
+            if (key.includes(".")) {
+                const [prefix, suffix] = key.split(".", 2);
+                normalized[`${prefix}.input${suffix.charAt(0).toUpperCase() + suffix.slice(1)}`] = inputNamesToValuesDict[key];
+            } else {
+                normalized[key] = inputNamesToValuesDict[key];
+            }
+        }
+
+        return normalized;
+    }
+
+    /**
+     * Ensures all external API nodes have apiKey in their configuration
+     * @param {Object} graphConfig - The graph configuration object
+     * @returns {Object} Updated graph configuration with apiKey added where needed
+     */
+    __ensureApiKeyInNodeConfigs(graphConfig) {
+        if (!graphConfig || !graphConfig.children) {
+            return graphConfig;
+        }
+
+        // Deep clone to avoid modifying original
+        const updatedConfig = JSON.parse(JSON.stringify(graphConfig));
+
+        updatedConfig.children.forEach(node => {
+            if (node.nodeType === SkymelECGraphUtils.NODE_TYPE_EXTERNAL_API_CALLER && 
+                node.nodeInitializationConfig && 
+                node.nodeInitializationConfig.endpointUrl &&
+                !node.nodeInitializationConfig.apiKey) {
+                // Add the apiKey to nodes that are missing it
+                node.nodeInitializationConfig.apiKey = this.apiKey;
+            }
+        });
+
+        return updatedConfig;
     }
 }

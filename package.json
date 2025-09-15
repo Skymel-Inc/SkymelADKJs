@@ -1,6 +1,6 @@
 {
   "name": "skymel-adk-js-beta",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0",
   "description": "Skymel Agent Development Kit using Javascript - A JavaScript SDK for creating and managing intelligent agents",
   "main": "dist/skymel-adk.cjs",
   "module": "dist/skymel-adk.esm.js",
