@@ -29,7 +29,7 @@ npm install skymel-adk-js-beta
 Or import directly via CDN:
 
 ```javascript
-import {SkymelAgent} from "https://cdn.jsdelivr.net/npm/skymel-adk-js-beta@1.0.0-beta.1/+esm";
+import {SkymelAgent} from "import {SkymelAgent} from https://cdn.jsdelivr.net/npm/skymel-adk-js-beta@latest/dist/skymel-adk.esm.js";
 ```
 
 ### Basic Usage
@@ -38,7 +38,7 @@ import {SkymelAgent} from "https://cdn.jsdelivr.net/npm/skymel-adk-js-beta@1.0.0
 import {SkymelAgent} from "skymel-adk-js-beta";
 
 const apiKey = "YOUR_API_KEY";
-const agentCreationEndpointUrl = "https://skymel.com/YourApiEndpoint";
+const agentCreationEndpointUrl = "https://skymel.com/websocket-dynamic-agent-generation-infer";
 const agentCreationEndpointUrlIsWebSocketUrl = true;
 
 // Create agent instance
