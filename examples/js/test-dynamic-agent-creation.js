@@ -304,10 +304,7 @@ class DynamicAgentTestInterface {
             // Clear execution log
             document.getElementById('execution-log-output').textContent = '';
 
-            // Load the agent graph
-            this.executionGraph = SkymelExecutionGraphLoader.loadGraphFromJsonObject(this.currentAgent);
-
-            // Prepare external inputs for agent execution using same approach as app.js
+            // Prepare external inputs for agent execution
             const task = document.getElementById('agent-task').value.trim();
             const agentExternalInputs = {
                 "external.text": task
@@ -332,24 +329,34 @@ class DynamicAgentTestInterface {
 
             console.log('Executing agent with inputs:', agentExternalInputs);
 
-            // Validate the graph before execution (like simulateAIResponse does)
-            const isValid = await this.executionGraph.isGraphValid();
-            console.log('Graph validation result:', isValid);
+            // Use the SkymelAgent's runAgenticWorkflow method instead of manual execution
+            // Get configuration values from the form
+            const agentName = document.getElementById('agent-name').value.trim();
+            const developerPrompt = document.getElementById('developer-prompt').value.trim();
+            const isMcpEnabled = document.getElementById('enable-mcp').checked;
 
-            if (!isValid) {
-                throw new Error('Generated agent graph is invalid and cannot be executed');
-            }
+            // Create SkymelAgent instance (reuse from createAgent method)
+            const apiKey = "your-api-key-here"; // This should come from configuration/environment
+            const agentCreationEndpointUrl = "https://skymel.com/websocket-dynamic-agent-generation-infer";
+            const agentCreationEndpointUrlIsWebSocketUrl = true;
 
-            // Normalize input keys like simulateAIResponse does
-            const normalizedInputs = this.normalizeInputKeys(agentExternalInputs);
-            console.log('Normalized inputs:', normalizedInputs);
+            const skymelAgent = new SkymelAgent(
+                apiKey,
+                agentCreationEndpointUrl,
+                agentCreationEndpointUrlIsWebSocketUrl,
+                agentName,
+                "",
+                "",
+                developerPrompt,
+                isMcpEnabled
+            );
 
-            // Execute the agent graph with normalized inputs
-            await this.executionGraph.executeGraph({
-                'externalInputNamesToValuesDict': normalizedInputs
-            });
+            // Execute the agent using the SDK method
+            const executionResult = await skymelAgent.runAgenticWorkflow(
+                this.currentAgent,
+                agentExternalInputs
+            );
 
-            const executionResult = this.executionGraph.getLastExecutionResult();
             console.log('Agent execution result:', executionResult);
 
             // Display execution results with better formatting
@@ -1135,30 +1142,6 @@ class DynamicAgentTestInterface {
         document.querySelector('.tab[data-tab="agent-json"]').click();
     }
 
-    /**
-     * Normalizes input keys for ECGraph execution (copied from workflow_orchestrator.js)
-     * @param {Object} externalInputs - External inputs object
-     * @returns {Object} Normalized inputs
-     */
-    normalizeInputKeys(externalInputs) {
-        const normalized = {};
-
-        for (const key in externalInputs) {
-            if (key.includes("input")) {
-                normalized[key] = externalInputs[key];
-                continue;
-            }
-
-            if (key.includes(".")) {
-                const [prefix, suffix] = key.split(".", 2);
-                normalized[`${prefix}.input${suffix.charAt(0).toUpperCase() + suffix.slice(1)}`] = externalInputs[key];
-            } else {
-                normalized[key] = externalInputs[key];
-            }
-        }
-
-        return normalized;
-    }
 }
 
 // Initialize the test interface when the DOM is loaded
