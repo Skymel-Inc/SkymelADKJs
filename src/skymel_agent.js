@@ -16,6 +16,7 @@ export class SkymelAgent {
         this.isMcpEnabled = isMcpEnabled;
 
         this.agenticWorkflowIdToJsonConfig = {};
+        this.lastExecutedGraph = null;
     }
 
     getAgentCreationEndpointUrl() {
@@ -204,6 +205,9 @@ export class SkymelAgent {
             return Promise.reject('Could not successfully load agentic workflow graph.');
         }
 
+        // Store the graph instance for later access
+        this.lastExecutedGraph = agenticWorkflowSkymelECGraph;
+
         const listOfExternalInputs = SkymelECGraphUtils.getExternalInputNamesFromGraphInitializationConfig(agenticWorkflowSkymelECGraph.getInitializationConfig());
         
         // Validate that the graph is valid before execution
@@ -282,5 +286,13 @@ export class SkymelAgent {
         });
 
         return updatedConfig;
+    }
+
+    /**
+     * Gets the last executed agentic workflow graph instance
+     * @returns {SkymelECGraph|null} The last executed graph or null if none has been executed
+     */
+    getLastExecutedGraph() {
+        return this.lastExecutedGraph;
     }
 }
