@@ -2,6 +2,12 @@
   "name": "skymel-adk-js-beta",
   "version": "1.0.0",
   "description": "Skymel Agent Development Kit using Javascript - A JavaScript SDK for creating and managing intelligent agents",
+  "homepage": "https://github.com/Skymel-Inc/SkymelADKJs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Skymel-Inc/SkymelADKJs.git"
+  },
+  "keywords": ["agents", "sdk", "workflow", "automation", "javascript", "adk", "ai-agents", "agent-framework", "multi-model", "reasoning"],
   "main": "dist/skymel-adk.cjs",
   "module": "dist/skymel-adk.esm.js",
   "browser": {

@@ -1,8 +1,45 @@
 # Skymel Agent Development Kit (ADK)
 
-**Build hands-off agents with multi-model reasoning**
+> **Build reliable AI agents that don't hallucinate or break**  
+> Multi-model reasoning • Natural language definitions • Self-healing execution
+
+[![npm version](https://img.shields.io/npm/v/skymel-adk-js-beta.svg)](https://www.npmjs.com/package/skymel-adk-js-beta)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](./LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Skymel-Inc/SkymelADKJs?style=social)](https://github.com/Skymel-Inc/SkymelADKJs)
+
+**⭐️ Star this repo if you build agents!**
+
+```bash
+npm install skymel-adk-js-beta
+```
+
+[📚 **Documentation**](http://skymel.com/docs.html) | [🚀 **Try Playground**](http://skymel.com/playground.html)
 
 ---
+
+## Quick Example
+
+```javascript
+// Create and run an agent in 5 lines
+import {SkymelAgent} from "skymel-adk-js-beta";
+
+const agent = new SkymelAgent(apiKey, endpoint, true, 
+  "Email Assistant", "Draft professional emails");
+  
+const result = await agent.run("Write a welcome email for new users");
+```
+
+## Why Skymel?
+
+**Traditional AI agents fail because:**
+- ❌ LLMs hallucinate and drift from goals
+- ❌ Complex workflow coding for simple tasks
+- ❌ No error recovery - one failure breaks everything
+
+**Skymel agents work because:**
+- ✅ Multi-model reasoning (LLMs + ML + causal models)
+- ✅ Natural language definitions, no workflow coding
+- ✅ Automatic error recovery and self-healing
 
 ## Overview
 
